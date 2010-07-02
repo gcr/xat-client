@@ -1,0 +1,82 @@
+Xat uses flash's XMLSocket. See:
+http://www.adobe.com/support/flash/action_scripts/actionscript_dictionary/actionscript_dictionary860.html
+
+echo -n -e "<policy-file-request/>\000" | nc 174.36.242.42 10037
+
+Code is in chat.as3. Not sure what to make of it.
+for example, ReLogin(): network.NetworkClose();
+
+there's a 'public class global' and a 'public class todo', all full of class
+variables. yuck.
+onMsg is line chat.as3:5596.
+line 10825 is 'doXatIM', which appears to parse CSV.
+network begins in 12169
+
+A transcript of my conversation with the server. The . at the end of every tag
+is a \00 character. > is sent, < is recieved. attributes: u seems to be user ID
+(numeric), n is name (if applicable), email and imtype? perhaps
+
+<y> is some kind of authentication.
+<p> is a private message.
+<c> is a control message.
+<m> is a message.
+messages with attr t beginning with "/" (FirstTwo) are treated specially.
+    for <c> and <p>: t is
+        /m: Make user
+        /r: Remove user
+        /k: Kick user
+    for <m>:
+        /g
+        /u
+        /m
+        /r
+        /k
+        /n
+<q> means a kick, <q p2="room"> means you were kicked to a separate room.
+same for <logout>
+        
+
+>   <y m="1" />.
+<   <y i="2021040961" c="1278089865" />.
+          you need to remember I and C
+
+>   <j2 l4="3603" l3="3561" l2="0" y="2021040961" k="-1703400679" k3="381394543" z="11" p="0" c="100867422" r="1833903872" f="0" u="256409089" m0="0" m1="0" m2="0" d0="0" d3="4992373" N="hotdog0003" n="gcr" a="http://i941.photobucket.com/albums/ad253/hotdog003/dresdencodak.png" h="" v="3" />.
+    j2 is a join message. h is homepage. a is avatar. n is displayed name. v is
+    "w_td_userrev". N is your username "w_registered". d0, d1,... seem to be
+    powers. dx is how many "xats" you have. m0, m1, m2, etc. seem to be "masks".
+    f seems to be an autologin flag (0 if true). "r" is "pass". c is the HTML id
+    (room number maybe? "channel"?) z is always 11. y is the I element above.
+    l2, l3, l4 seem to be timing information.
+    
+
+<   <p u="1" t="/m1833903872" />.
+<   <i b="http://i47.tinypic.com/307s39e.png;=;=1;=;=" f="0" v="1" r="3" />.
+          This image is the room background.
+
+    What follows is earlier messages.
+<   <m t="because they are in love &lt;3 :] hehe" u="211513178_5" n="______(mgp)__.wau!wa.__(mgp)________._________.______...____.__a__.g_______.___________.____.___a_________.." a="http://i498.photobucket.com/albums/rr343/Timmc5/Eminem.jpg#up#hearts" h="www.xat.com/eminem_fanz" v="5" i="14424" s="1" />.
+        because I haven't seen that "u" before, I'm treated to their name (n),
+        avatar (a), etc.
+<   <m t="haha hey guys" u="238312570_1" i="14425" s="1" />.
+<   <m t="suprised anyone&apos;s on" u="238312570_1" n="mimz" a="31" h="" v="1" i="14426" s="1" />.
+<   <m t="lets make something happen" u="211513178_5" i="14428" s="1" />.
+<   <m t="lol that came out wrong" u="211513178_5" i="14429" s="1" />.
+<   <m t="x]" u="211513178_5" i="14430" s="1" />.
+<   <m t="lol wtf" u="232753645_189" i="14431" s="1" />.
+<   <m t="yes that did =P" u="232753645_189" i="14432" s="1" />.
+<   <m t=" (hehe) " u="211513178_5" i="14433" s="1" />.
+<   <m t=" (omg) " u="232753645_189" i="14434" s="1" />.
+<   <m t=" (o_o) " u="232753645_189" i="14435" s="1" />.
+<   <m t="is your chat empty?" u="232753645_189" i="14436" s="1" />.
+<   <m t="Yuhp" u="211513178_5" i="14437" s="1" />.
+<   <m t="like always" u="211513178_5" i="14438" s="1" />.
+<   <m t="=/" u="232753645_189" i="14439" s="1" />.
+<   <m t="sux" u="232753645_189" n="iohtseiunmiuoser" a="682" h="" v="189" i="14440" s="1" />.
+<   <m t="nobody is here right now" u="249627151_20" i="14441" s="1" />.
+<   <m t="but correct me if i am wrong, i see the name &quot;timothy&quot; and &quot;joshua&quot; apparently sitting in a tree, kissing on the bottom of this box" u="249627151_20" i="14442" s="1" />.
+<   <m t="might i ask why this timmy and joshua would do such a thing?" u="249627151_20" n="SexySpanishMaskedBoy" a="1346" h="" v="20" i="14443" s="1" />.
+<   <done />.
+    signals the end
+>   <m t="WHAT&apos;S THIS?!" u="256409089_3" />.
+>   <m t="Hello everybody" u="256409089_3" />.
+

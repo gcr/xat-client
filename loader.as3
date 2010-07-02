@@ -1,0 +1,47 @@
+﻿package {
+    import flash.display.*;
+    import flash.net.*;
+    import flash.events.*;
+
+    public class shim extends Sprite {
+
+        var u:String = "http://www.xatech.com/web_gear/flash/chat445.swf";
+        var mL:Loader;
+        var Count:int = 0;
+
+        public function shim(){
+            this.loadit();
+        }
+        function loadit(_arg1:Boolean=false){
+            var _local3:Date;
+            var _local2:String = this.u;
+            this.Count++;
+            if (_arg1){
+                if (this.Count == 2){
+                    _local2 = (_local2 + "?b");
+                } else {
+                    _local3 = new Date();
+                    _local2 = (_local2 + ("?" + int((_local3.getTime() / 3600000))));
+                };
+                removeChild(this.mL);
+                this.mL.unloadAndStop(true);
+            };
+            this.mL = new Loader();
+            addChild(this.mL);
+            this.mL.load(new URLRequest(_local2));
+            if (this.Count < 3){
+                this.mL.contentLoaderInfo.addEventListener(Event.COMPLETE, this.Handler);
+                this.mL.addEventListener(IOErrorEvent.IO_ERROR, this.catchIO);
+            };
+        }
+        function catchIO(_arg1){
+            this.loadit(true);
+        }
+        function Handler(_arg1){
+            if (this.mL.contentLoaderInfo.bytesLoaded < 124000){
+                this.loadit(true);
+            };
+        }
+
+    }
+}//package
