@@ -2,7 +2,6 @@
 //
 var net = require('net'),
     sys = require('sys'),
-    XMLSocket
     events = require('events'),
     Xml = require('./node-xml/lib/node-xml');
 
@@ -38,7 +37,7 @@ var XMLSocket = exports.XMLSocket = function(host, port) {
 
   var self = this;
   this.stream.addListener('connect', function() {
-      self.emit("connected", this);
+      self.emit("connected", self);
     });
   this.stream.addListener('data', function(data) {
       self.incomingBuffer(data);
@@ -77,15 +76,15 @@ XMLSocket.prototype.incomingTag = function(element, attrs) {
   // element is a string. "a", "div", whatevah. attrs is a list that looks like
   // [ ["href", "http://google.com"], ["style", "border: 1px solid gold;"] ]
   // We'll pass that in to the callback if it exists.
+  var attrObj = {};
+  for (var i=0,l=attrs.length; i<l; i++) {
+    attrObj[attrs[i][0]] = attrs[i][1];
+  }
   if (element in this.callbackTags) {
-    var attrObj = {};
-    for (var i=0,l=attrs.length; i<l; i++) {
-      attrObj[attrs[i][0]] = attrs[i][1];
-    }
     this.emit("incomingTag", element, attrObj, this);
     this.callbackTags[element](attrObj);
   } else {
-    this.emit("unknownTag", element, attrs, this);
+    this.emit("unknownTag", element, attrObj, this);
   }
 };
 
@@ -111,7 +110,7 @@ XMLSocket.prototype.send = function(element, attrs) {
   var response = '<' + element;
   for (var a in attrs) {
       if (attrs.hasOwnProperty(a)) {
-        response += ' ' + a + '="' + attrs[a]
+        response += ' ' + a + '="' + (""+attrs[a])
           .replace(new RegExp("&", "g"), '&amp;')
           .replace(new RegExp('"', "g"), '&quot;')
           .replace(new RegExp("'", "g"), '&apos;')
@@ -122,4 +121,15 @@ XMLSocket.prototype.send = function(element, attrs) {
   response += "/>\x00";
   this.emit("send", response, this);
   this.stream.write(response);
+};
+
+exports.stringifyTag = function(element, attrs) {
+  var result= "<"+element;
+  for (var a in attrs) {
+    if (attrs.hasOwnProperty(a)) {
+      result+=" " + a + '="'+attrs[a]+'"';
+    }
+  }
+  result += "/>";
+  return result;
 };

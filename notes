@@ -81,3 +81,15 @@ same for <logout>
 >   <m t="WHAT&apos;S THIS?!" u="256409089_3" />.
 >   <m t="Hello everybody" u="256409089_3" />.
 
+
+Here's a snippet from a bot that isn't registered.
+-----------------------------------------------------
+
+??  <u u="1999971348" n="" a="" h="" v="1"/>
+
+??  <l u="1999971348"/>
+
+??  <u u="256665690" n="CutieDumplings" a="371" h="" v="0"/>
+
+??  <m t="What's this now? Ohh, interesting" u="256665690" i="0"/>
+
