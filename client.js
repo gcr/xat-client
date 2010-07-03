@@ -1,5 +1,5 @@
 // Xat client
-var XatClient = require('./xatstream').XatClient,
+var XatClient = require('./xat-client').XatClient,
     sys = require('sys');
 
 
