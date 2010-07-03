@@ -123,6 +123,10 @@ XMLSocket.prototype.send = function(element, attrs) {
   this.stream.write(response);
 };
 
+XMLSocket.prototype.close = function() {
+  this.stream.end();
+};
+
 exports.stringifyTag = function(element, attrs) {
   var result= "<"+element;
   for (var a in attrs) {
@@ -133,3 +137,4 @@ exports.stringifyTag = function(element, attrs) {
   result += "/>";
   return result;
 };
+

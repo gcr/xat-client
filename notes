@@ -27,7 +27,7 @@ messages with attr t beginning with "/" (FirstTwo) are treated specially.
         /r: Remove user
         /k: Kick user
     for <m>:
-        /g
+        /g Gag(ged?) user --  <m p="LOL GTFO" t="/g3600" u="232242656" d="256669076"/>
         /u
         /m
         /r
