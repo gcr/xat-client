@@ -7,6 +7,9 @@ I'm considering either turning this into a commandline xat chat room program
 (think [irssi](http://www.irssi.org/)) or just turning it into an IRC gateway
 (think [bitlbee](http://www.bitlbee.org/main.php/news.r.html))
 
+Note that clean room design wasn't used here, I'm working directly from the
+decompiled actionscript. I don't know about the legal implications of that.
+
 To use this:
 ------------
 
