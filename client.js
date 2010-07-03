@@ -24,17 +24,36 @@ client.addListener('joining', function() {
     sys.puts("-- Joining...");
   });
 
-client.addListener('joined', function() {
-    sys.print("-- Users: ");
+client.addListener('channelInfo', function(obj) {
+    sys.print("-- Channel info: ");
     var split=false;
+    for (var k in obj) {
+      if (obj.hasOwnProperty(k)) {
+        if (split) {
+          sys.print(", ");
+        }
+        sys.print(k + ": " + obj[k]);
+        split=true;
+      }
+    }
+  });
+
+client.addListener('joined', function() {
+    sys.print("-- Userlist: ");
+    var split=false;
+    var numUsers=0, numOps=0;
     for (var uid in client.users) {
       if (client.users.hasOwnProperty(uid) && !client.users[uid].old) {
+        numUsers++;
+        if (client.users[uid].owner) {
+          numOps++;
+        }
         if (split) {sys.print(",  ");}
         sys.print((client.users[uid].owner? "@" : "") + client.users[uid].name + " ");
         split=true;
       }
     }
-    sys.puts("\n-- Joined the channel.\n");
+    sys.print("\n-- Total of " + (numUsers+numOps) + " users online ("+numOps+" ops)\n-- Join to channel synched.\n");
   });
 
 client.addListener('message', function(text, user) {
@@ -62,7 +81,7 @@ client.addListener("idle", function() {
 if (DEBUG) {
   client.addListener('incomingTag', function(element, attrs) {
       if (DEBUG > 1 || ["y", "m", "u", "o", "l", "done"].indexOf(element) == -1) {
-        sys.puts("--  " + XMLSocket.stringifyTag(element, attrs) + "\n");
+        sys.puts("<< " + XMLSocket.stringifyTag(element, attrs));
       }
     });
 }

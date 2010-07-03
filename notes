@@ -2,20 +2,16 @@ Xat uses flash's XMLSocket. See:
 http://www.adobe.com/support/flash/action_scripts/actionscript_dictionary/actionscript_dictionary860.html
 
 echo -n -e "<policy-file-request/>\000" | nc 174.36.242.42 10037
+will give you a quick example of how it all goes down.
 
 Code is in chat.as3. Not sure what to make of it.
-for example, ReLogin(): network.NetworkClose();
 
-there's a 'public class global' and a 'public class todo', all full of class
-variables. yuck.
 onMsg is line chat.as3:5596.
-line 10825 is 'doXatIM', which appears to parse CSV.
-network begins in 12169
+line 12457 is 'myOnXML' which processes all recieved XML
+line 10825 is 'doXatIM', which appears to parse CSV for some reason
+'network class' begins in 12169
 
-A transcript of my conversation with the server. The . at the end of every tag
-is a \00 character. > is sent, < is recieved. attributes: u seems to be user ID
-(numeric), n is name (if applicable), email and imtype? perhaps
-
+Tag list:
 <y> is some kind of authentication.
 <p> is a private message.
 <c> is a control message.
@@ -36,6 +32,10 @@ messages with attr t beginning with "/" (FirstTwo) are treated specially.
 <q> means a kick, <q p2="room"> means you were kicked to a separate room.
 same for <logout>
         
+Here's a transcript of my conversation with the server (wireshark; native
+client). The . at the end of every tag is a \00 character. > is sent, < is
+recieved. attributes: u seems to be user ID (numeric), n is name (if
+applicable), email and imtype? perhaps
 
 >   <y m="1" />.
 <   <y i="2021040961" c="1278089865" />.
@@ -51,13 +51,18 @@ same for <logout>
     
 
 <   <p u="1" t="/m1833903872" />.
-<   <i b="http://i47.tinypic.com/307s39e.png;=;=1;=;=" f="0" v="1" r="3" />.
-          This image is the room background.
+    This could be a private message indicating I've joined the server (see slash
+    codes above)
 
-    What follows is earlier messages.
+<   <i b="http://i47.tinypic.com/307s39e.png;=;=1;=;=" f="0" v="1" r="3" />.
+      This image is the room background.
+
+    What follows is recent messages just before I arrived.
 <   <m t="because they are in love &lt;3 :] hehe" u="211513178_5" n="______(mgp)__.wau!wa.__(mgp)________._________.______...____.__a__.g_______.___________.____.___a_________.." a="http://i498.photobucket.com/albums/rr343/Timmc5/Eminem.jpg#up#hearts" h="www.xat.com/eminem_fanz" v="5" i="14424" s="1" />.
         because I haven't seen that "u" before, I'm treated to their name (n),
         avatar (a), etc.
+        Note that 'lurkers' are treated differently (they have <o> tags for old
+        users, <u> tags for new ones)
 <   <m t="haha hey guys" u="238312570_1" i="14425" s="1" />.
 <   <m t="suprised anyone&apos;s on" u="238312570_1" n="mimz" a="31" h="" v="1" i="14426" s="1" />.
 <   <m t="lets make something happen" u="211513178_5" i="14428" s="1" />.

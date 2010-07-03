@@ -1,5 +1,5 @@
 // Parses xat streams.
-//
+/*jslint bitwise: false */
 var net = require('net'),
     sys = require('sys'),
     events = require('events'),
@@ -18,6 +18,7 @@ var XatClient = exports.XatClient = function(channel, username, avatar, hpage) {
   // joining(channel, username, avatar, hpage): Joining the channel
   // joined(): Userlist, channel list has been downloaded.
   // message(text, user): We got a message from somebody
+  // channelInfo({background:...}): We've received information about the channel.
   //
   // Debug events:
   // incomingTag(elementName, attrs): Every command (debug)
@@ -35,8 +36,10 @@ sys.inherits(XatClient, events.EventEmitter);
 
 XatClient.prototype.getHost = function() {
   var sock  = ["174.36.242.26", "174.36.242.34", "174.36.242.42", "69.4.231.250"];
+      // sock2 seems to be used for redirection
       //sock2=["208.43.218.82", "174.36.56.202", "174.36.4.146", "174.36.56.186"];
-      return sock[(parseInt(this.channel, 10) & 96) >> 5];
+  // TODO: blatant copy+paste here
+  return sock[(parseInt(this.channel, 10) & 96) >> 5];
 };
 
 XatClient.prototype.getPort = function() {
@@ -154,6 +157,14 @@ XatClient.prototype.connect = function() {
         self.emit("message", attrs.t, self.users[uId] || {name: "(unknown) "+uId}, self);
       }
       // TODO: what to do when we don't have a user?
+    });
+  xmlsock.addTagListener("i", function(attrs) {
+      // Channel info. attrs.b is a string like
+      // "http://i47.tinypic.com/307s39e.png;=;=1;=;="
+      var bak = attrs.b.split(";");
+      // bak[0] is background; the rest are worthless things like sound control,
+      // colors, radio.
+      self.emit("channelInfo", {background: bak[0]});
     });
 };
 

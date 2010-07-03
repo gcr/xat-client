@@ -108,10 +108,7 @@ XMLSocket.prototype.addTagListeners = function(tagTable) {
   }
 };
 
-XMLSocket.prototype.send = function(element, attrs) {
-  // Send something to the server.
-  // send('div', {'style': "solid gold 1px;"});
-  // will send <div style="solid gold 1px;" />\x00
+var stringifyTag = exports.stringifyTag = function(element, attrs) {
   var response = '<' + element;
   for (var a in attrs) {
       if (attrs.hasOwnProperty(a)) {
@@ -123,23 +120,20 @@ XMLSocket.prototype.send = function(element, attrs) {
           .replace(new RegExp(">", "g"), '&gt;') + '"';
       }
   }
-  response += "/>\x00";
+  response += "/>";
+  return response;
+};
+
+XMLSocket.prototype.send = function(element, attrs) {
+  // Send something to the server.
+  // send('div', {'style': "solid gold 1px;"});
+  // will send <div style="solid gold 1px;" />\x00
+  var response = stringifyTag(element, attrs);
   this.emit("send", response, this);
-  this.stream.write(response);
+  this.stream.write(response+"\x00");
 };
 
 XMLSocket.prototype.close = function() {
   this.stream.end();
-};
-
-exports.stringifyTag = function(element, attrs) {
-  var result= "<"+element;
-  for (var a in attrs) {
-    if (attrs.hasOwnProperty(a)) {
-      result+=" " + a + '="'+attrs[a]+'"';
-    }
-  }
-  result += "/>";
-  return result;
 };
 
