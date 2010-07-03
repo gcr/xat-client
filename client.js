@@ -36,6 +36,7 @@ client.addListener('channelInfo', function(obj) {
         split=true;
       }
     }
+    sys.print("\n");
   });
 
 client.addListener('joined', function() {
