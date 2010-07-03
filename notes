@@ -20,6 +20,7 @@ is a \00 character. > is sent, < is recieved. attributes: u seems to be user ID
 <p> is a private message.
 <c> is a control message.
 <m> is a message.
+<l> is logout? and <u> is login?
 messages with attr t beginning with "/" (FirstTwo) are treated specially.
     for <c> and <p>: t is
         /m: Make user
