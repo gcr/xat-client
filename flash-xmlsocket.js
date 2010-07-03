@@ -42,6 +42,9 @@ var XMLSocket = exports.XMLSocket = function(host, port) {
   this.stream.addListener('data', function(data) {
       self.incomingBuffer(data);
     });
+  this.stream.addListener('error', function(ex) {
+      self.emit("error", ex, self);
+    });
 
   // Build parser
   this.parser = new Xml.SaxParser(function(cb) {

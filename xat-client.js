@@ -22,15 +22,19 @@ var XatClient = exports.XatClient = function(channel, username, avatar, hpage) {
   //
   // Debug events:
   // incomingTag(elementName, attrs): Every command (debug)
+  // TCPError(exception): Server closed our command (more precisely, net.Stream
+  //                      threw an exception). We'll reconnect.
   // unknownTag(elementName, attrs): We ignored it
   // connecting(host, port, channel): Trying to connect
   // connected(): Server connected
-  // idle(): Server kicked us
+  // rejoining(): Server kicked us either through closing our connection or
+  //              sending an <idle /> tag.
   //
   this.channel = channel;
   this.username = username;
   this.avatar = avatar;
   this.hpage = hpage;
+  this.rejoining = false;
 };
 sys.inherits(XatClient, events.EventEmitter);
 
@@ -48,10 +52,8 @@ XatClient.prototype.getPort = function() {
 };
 
 XatClient.prototype.connect = function() {
-  // TODO: if we were idled, don't log old messages
-  // there's a way to pick one of these hosts.
+  // Establish the XMLSocket connection. (You must call this yourself!)
   var host = this.getHost(), port = this.getPort();
-  // port should be (10037)
   this.emit("connecting", host, port, this.channel, this);
   var xmlsock = this.xmlsock = new XMLSocket.XMLSocket(host, ""+port);
   this.state = "negotiating";
@@ -60,8 +62,6 @@ XatClient.prototype.connect = function() {
   //     ...
   // }
   this.users = {};
-
-  this.rejoining = false;
 
   // Let's pass on event handlers for debug purposes.
   var self = this;
@@ -74,6 +74,12 @@ XatClient.prototype.connect = function() {
   xmlsock.addListener('connected', function() {
       xmlsock.send("y", {"m":1});
       self.emit("connected", self);
+    });
+  xmlsock.addListener('error', function(exception) {
+      self.emit("TCPError", exception, self);
+      if (self.state == "joined") {
+        self.rejoin();
+      }
     });
 
   // What operations will the server send us? Listen for some tags
@@ -88,11 +94,8 @@ XatClient.prototype.connect = function() {
       }
     });
   xmlsock.addTagListener("idle", function() {
-      // We got kicked.
-      self.rejoining = true; // messages and user events will not be sent
-      self.emit("idle", self);
-      self.xmlsock.close();
-      self.connect();
+      // We got kicked. Server will send <idle /> and close the connection.
+      self.rejoin();
     });
   xmlsock.addTagListener(["u", "g", "o"], function(attrs, element) {
       // User update. attrs.u is the user ID (split by _), n is display name, a
@@ -111,6 +114,7 @@ XatClient.prototype.connect = function() {
                         hpage: attrs.h,
                         owner: "124".indexOf(attrs.f) != -1, // HACK
                         real: attrs.N,
+                        uid: uId,
                         old: element == "o"
                       };
 
@@ -195,4 +199,11 @@ XatClient.prototype.join = function() {
       l3: 0,
       l4: 2350
     });
+};
+
+XatClient.prototype.rejoin = function() {
+  this.rejoining = true; // messages and user events will not be sent
+  this.emit("rejoining", this);
+  this.xmlsock.close();
+  this.connect();
 };

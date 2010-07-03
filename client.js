@@ -68,15 +68,19 @@ client.addListener('userJoin', function(user) {
   });
 
 client.addListener('userChange', function(old, user) {
-    sys.puts("-- User " + old.name + " changed his nick to " + user.name + " (website: " + user.hpage + ")");
+    sys.puts("-- User " + old.name + " is now " + user.name);
   });
 
 client.addListener('userPart', function(old) {
     sys.puts("-- Part: " + old.name);
   });
 
-client.addListener("idle", function() {
-    sys.puts("-- We were idled; reconnecting...");
+client.addListener("TCPError", function(ex) {
+    sys.puts("!! TCP error: " + ex.message + "\n" + ex.stack);
+  });
+
+client.addListener("rejoining", function() {
+    sys.puts("-- We were kicked; reconnecting...");
   });
 
 if (DEBUG) {
