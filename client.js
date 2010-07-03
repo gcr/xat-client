@@ -12,31 +12,44 @@ var client = new XatClient(CHANNEL, 'gcr_bot', '235', 'http://google.com');
 //    sys.puts(sys.inspect(buffer.toString("ascii", 0, buffer.length)));
 //  });
 
+// When we get kicked, we won't show lots of things (connection messages, etc)
+var firstConnection = true;
+
+function styleUserName(user) {
+  return ((user.owner? "@" : "") + user.name);
+}
+
 client.addListener('unknownTag', function(element, attrs) {
     sys.puts("??  " + XMLSocket.stringifyTag(element, attrs) + "\n");
   });
 
 client.addListener('connecting', function(host, port, channel) {
-    sys.puts("-- Connecting to " + host + ":" + port);
+    if (firstConnection) {
+      sys.puts("-- Connecting to " + host + ":" + port);
+    }
   });
 
 client.addListener('joining', function() {
-    sys.puts("-- Joining...");
+    if (firstConnection) {
+      sys.puts("-- Joining...");
+    }
   });
 
 client.addListener('channelInfo', function(obj) {
-    sys.print("-- Channel info: ");
-    var split=false;
-    for (var k in obj) {
-      if (obj.hasOwnProperty(k)) {
-        if (split) {
-          sys.print(", ");
+    if (firstConnection) {
+      sys.print("-- Channel info: ");
+      var split=false;
+      for (var k in obj) {
+        if (obj.hasOwnProperty(k)) {
+          if (split) {
+            sys.print(", ");
+          }
+          sys.print(k + ": " + obj[k]);
+          split=true;
         }
-        sys.print(k + ": " + obj[k]);
-        split=true;
       }
+      sys.print("\n");
     }
-    sys.print("\n");
   });
 
 client.addListener('joined', function() {
@@ -50,29 +63,28 @@ client.addListener('joined', function() {
           numOps++;
         }
         if (split) {sys.print(",  ");}
-        sys.print((client.users[uid].owner? "@" : "") + client.users[uid].name);
+        sys.print(styleUserName(client.users[uid]));
         split=true;
       }
     }
-    sys.print("\n-- Total of " + (numUsers+numOps) + " users online ("+numOps+" ops)\n-- Join to channel synched.\n");
+    sys.print("\n-- Total of " + (numUsers+numOps) + " users online ("+numOps+" ops)\n");
+    firstConnection = false;
   });
 
 client.addListener('message', function(text, user) {
-    sys.puts("<" +
-        (user.owner? "@" : "") +
-        user.name + "> " + text);
+    sys.puts("<" + styleUserName(user)+ "> " + text);
   });
 
 client.addListener('userJoin', function(user) {
-    sys.puts("-- Join: " + user.name);
+    sys.puts("-- Join: " + styleUserName(user));
   });
 
 client.addListener('userChange', function(old, user) {
-    sys.puts("-- User " + old.name + " is now " + user.name);
+    sys.puts("-- User " + styleUserName(old) + " is now " + styleUserName(user));
   });
 
 client.addListener('userPart', function(old) {
-    sys.puts("-- Part: " + old.name);
+    sys.puts("-- Part: " + styleUserName(old));
   });
 
 client.addListener("TCPError", function(ex) {
@@ -85,7 +97,8 @@ client.addListener("rejoining", function() {
 
 if (DEBUG) {
   client.addListener('incomingTag', function(element, attrs) {
-      if (DEBUG > 1 || ["y", "m", "u", "o", "l", "done"].indexOf(element) == -1) {
+      // Filter out certain well-known mostly implemented tags for DEBUG==1
+      if (DEBUG > 1 || ["i", "y", "m", "u", "o", "l", "done"].indexOf(element) == -1) {
         sys.puts("!! " + XMLSocket.stringifyTag(element, attrs));
       }
     });
