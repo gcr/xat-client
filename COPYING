@@ -1,0 +1,20 @@
+(this file was originally written by _gcr http://github.com/gcr -- please keep
+these two lines intact in your versions for clarity)
+
+I do not know if I can release this under a free or open source license, as this
+software was not built with clean-room design.
+
+No parts of the code were copy+pasted from the decompiled actionscript (see
+chat.as3) and they have significantly different architecture (I like to think
+mine is better, but of course that could just be the decompiler's handiwork),
+but I cannot prove this isn't a derived work, as I used chat.as3 heavily for
+reference.
+
+That said, if this serves a useful purpose to you, please feel free to fork,
+change, and use anything but chat.as3, chat445.swf, and loader.as3 as you
+desire; however, by doing so, you implicitly agree to accept full legal
+responsibility for your actions (don't sue me if xat comes after you.) In
+clearer words, I (the author) don't care what you do with this, but Xat might.
+
+If Xat (or its parent company) decides to send me a cease and desist order, I
+WILL take this down, as I have no legal basis in developing this software.
