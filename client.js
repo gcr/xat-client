@@ -49,7 +49,7 @@ client.addListener('joined', function() {
           numOps++;
         }
         if (split) {sys.print(",  ");}
-        sys.print((client.users[uid].owner? "@" : "") + client.users[uid].name + " ");
+        sys.print((client.users[uid].owner? "@" : "") + client.users[uid].name);
         split=true;
       }
     }
@@ -81,7 +81,7 @@ client.addListener("idle", function() {
 if (DEBUG) {
   client.addListener('incomingTag', function(element, attrs) {
       if (DEBUG > 1 || ["y", "m", "u", "o", "l", "done"].indexOf(element) == -1) {
-        sys.puts("<< " + XMLSocket.stringifyTag(element, attrs));
+        sys.puts("!! " + XMLSocket.stringifyTag(element, attrs));
       }
     });
 }
