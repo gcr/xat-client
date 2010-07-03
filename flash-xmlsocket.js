@@ -55,7 +55,7 @@ sys.inherits(XMLSocket, events.EventEmitter);
 
 XMLSocket.prototype.incomingBuffer = function(buffer) {
   // We got something from the server! Horray.
-  this.emit("incomingBuffer", this, buffer);
+  this.emit("incomingBuffer", buffer, this);
   var elements = buffer.toString("ascii", 0, buffer.length).split('\x00');
   for (var i=0,l=elements.length; i<l; i++) {
     var element = elements[i];
@@ -82,7 +82,7 @@ XMLSocket.prototype.incomingTag = function(element, attrs) {
   }
   if (element in this.callbackTags) {
     this.emit("incomingTag", element, attrObj, this);
-    this.callbackTags[element](attrObj);
+    this.callbackTags[element](attrObj, element);
   } else {
     this.emit("unknownTag", element, attrObj, this);
   }
@@ -91,7 +91,12 @@ XMLSocket.prototype.incomingTag = function(element, attrs) {
 XMLSocket.prototype.addTagListener = function(element, callback) {
   // Adds a tag listener. When we see a tag from the server with type 'element',
   // we'll run callback(attrs) for you.
-  this.callbackTags[element] = callback;
+  if (!(element instanceof Array)) {
+    element = [element];
+  }
+  for (var i=0,l=element.length; i<l; i++) {
+      this.callbackTags[element[i]] = callback;
+  }
 };
 
 XMLSocket.prototype.addTagListeners = function(tagTable) {
