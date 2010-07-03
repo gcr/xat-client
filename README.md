@@ -10,10 +10,18 @@ I'm considering either turning this into a commandline xat chat room program
 To use this:
 ------------
 
+Required steps:
+
 * Open up the xat you want to connect to in firebug or your browser's
   implementation of "View Source"
-* Find the flash <object>'s <param> string. In there will be something like
-  `id=2222222222&...` -- the 222222222 is your channel number.
+* Find the flash `<object>`'s `<param>` string. In there will be something like
+  `id=2222222222&...` -- the 222222222 is your channel number in this case.
 * Edit client.js and change `CHANNEL` to 2222222 (or whatever it was)
 * Run it with `node client.js`
 * Watch things break
+
+Optional steps:
+
+* After watching things break, fork the project
+* Fix those things that broke and commit
+* Send me a pull request
