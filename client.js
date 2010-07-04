@@ -67,7 +67,7 @@ client.addListener('joined', function() {
         split=true;
       }
     }
-    sys.print("\n-- Total of " + (numUsers) + " users online ("+numOps+" ops)\n");
+    sys.print("\n-- Total of " + (numUsers) + " user"+(numUsers!=1?"s":"")+" online ("+numOps+" op"+(numOps!=1?"s":"")+")\n");
     firstConnection = false;
   });
 
