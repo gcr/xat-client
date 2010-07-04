@@ -109,10 +109,11 @@ XatClient.prototype.connect = function() {
       // <o>: Implies the user is no longer online (e.g. for sending initial
       //      recent messages)
       var uId = attrs.u.split("_")[0],
-          newUserObj = {name: attrs.n,
+        newUserObj = {name: attrs.n || "(guest "+uId+")",
                         avatar: attrs.a,
                         hpage: attrs.h,
-                        owner: "124".indexOf(attrs.f) != -1, // HACK
+                        // 3 means a registered member
+                        owner: "124".indexOf(attrs.f&7) != -1, // HACK
                         real: attrs.N,
                         uid: uId,
                         old: element == "o"
